@@ -8,7 +8,7 @@ import (
 
 type Config struct {
 	DB_URL          string `json:"db_url"`
-	CurrentUserName string //`json:"current_user"`
+	CurrentUserName string `json:"current_user_name"`
 }
 
 const (
@@ -39,7 +39,7 @@ func Read() (Config, error) {
 	return c, err
 }
 
-func SetUser(conf *Config, user_name string) error {
+func (conf *Config) SetUser(user_name string) error {
 	conf.CurrentUserName = user_name
 
 	data, err := json.Marshal(conf)
