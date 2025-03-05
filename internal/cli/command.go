@@ -76,3 +76,21 @@ func HandlerReset(s *State, cmd Command) error {
 	fmt.Println("Successfully deleted all users")
 	return nil
 }
+
+func HandlerUsers(s *State, cmd Command) error {
+	users, err := s.DB.GetUsers(context.Background())
+
+	if err != nil {
+		return fmt.Errorf("couldn't get list of users: %w", err)
+	}
+
+	fmt.Println("Users in database:")
+	for _, u := range users {
+		fmt.Printf("* %s", u.Name)
+		if s.Config.CurrentUserName == u.Name {
+			fmt.Print(" (current)")
+		}
+		fmt.Println()
+	}
+	return nil
+}
