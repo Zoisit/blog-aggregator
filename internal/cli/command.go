@@ -105,3 +105,45 @@ func HandlerAgg(s *State, cmd Command) error {
 	fmt.Println(rssFeed)
 	return nil
 }
+
+func HandlerAddFeed(s *State, cmd Command) error {
+	if len(cmd.Arguments) < 2 {
+		return fmt.Errorf("name and url of the feed required")
+	}
+
+	u, err := s.DB.GetUser(context.Background(), s.Config.CurrentUserName)
+	if err != nil {
+		return fmt.Errorf("couldn't find user: %w", err)
+	}
+
+	arg := database.CreateFeedParams{
+		ID:        uuid.New(),
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+		Name:      cmd.Arguments[0],
+		Url:       cmd.Arguments[1],
+		UserID:    u.ID,
+	}
+
+	f, err := s.DB.CreateFeed(context.Background(), arg)
+	if err != nil {
+		return fmt.Errorf("couldn't create feed: %w", err)
+	}
+
+	fmt.Printf("Created feed %s:\nID:%v\nCreated at:%v,\nUpate at:%v\nURL:%v\nuser_id:%v\n", f.Name, f.ID, f.CreatedAt, f.UpdatedAt, f.Url, f.UserID)
+
+	return nil
+}
+
+func HandlerFeeds(s *State, cmd Command) error {
+	feeds, err := s.DB.GetFeedsWithUsername(context.Background())
+	if err != nil {
+		return fmt.Errorf("couldn't get list of feeds: %w", err)
+	}
+
+	fmt.Println("Feeds in database:")
+	for _, f := range feeds {
+		fmt.Printf("Name: %s\nURL: %s\nUser: %s\n\n", f.Name, f.Url, f.UserName)
+	}
+	return nil
+}
