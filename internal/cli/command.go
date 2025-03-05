@@ -22,9 +22,9 @@ func HandlerLogin(s *State, cmd Command) error {
 	_, err := s.DB.GetUser(context.Background(), cmd.Arguments[0])
 	if err != nil {
 		if err.Error() == "sql: no rows in result set" {
-			return fmt.Errorf("user is not registered in database")
+			return fmt.Errorf("couldn't find user: user is not registered in database")
 		}
-		return err
+		return fmt.Errorf("couldn't find user: %w", err)
 	}
 
 	err = s.Config.SetUser(cmd.Arguments[0])
@@ -52,9 +52,9 @@ func HandlerRegister(s *State, cmd Command) error {
 	u, err := s.DB.CreateUser(context.Background(), arg)
 	if err != nil {
 		if err.Error() == `pq: duplicate key value violates unique constraint "users_name_key"` {
-			return fmt.Errorf("user already exists")
+			return fmt.Errorf("couldn't create user: user already exists")
 		}
-		return err
+		return fmt.Errorf("couldn't create user: %w", err)
 	}
 
 	err = s.Config.SetUser(u.Name)
