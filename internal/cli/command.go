@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/Zoisit/blog-aggregator/internal/database"
+	"github.com/Zoisit/blog-aggregator/internal/rss"
 	"github.com/google/uuid"
 )
 
@@ -86,11 +87,21 @@ func HandlerUsers(s *State, cmd Command) error {
 
 	fmt.Println("Users in database:")
 	for _, u := range users {
-		fmt.Printf("* %s", u.Name)
 		if s.Config.CurrentUserName == u.Name {
-			fmt.Print(" (current)")
+			fmt.Printf("* %s (current)\n", u.Name)
+		} else {
+			fmt.Printf("* %s\n", u.Name)
 		}
-		fmt.Println()
 	}
+	return nil
+}
+
+func HandlerAgg(s *State, cmd Command) error {
+	rssFeed, err := rss.FetchFeed(context.Background(), "https://www.wagslane.dev/index.xml")
+	if err != nil {
+		return fmt.Errorf("couldn't get rss feed: %w", err)
+	}
+
+	fmt.Println(rssFeed)
 	return nil
 }

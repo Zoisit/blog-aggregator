@@ -37,6 +37,7 @@ func main() {
 	cmds.Register("register", cli.HandlerRegister)
 	cmds.Register("reset", cli.HandlerReset)
 	cmds.Register("users", cli.HandlerUsers)
+	cmds.Register("agg", cli.HandlerAgg)
 
 	args := os.Args
 
@@ -58,10 +59,10 @@ func main() {
 
 	//conf.SetUser("anja")
 
-	conf, err = config.Read()
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	fmt.Println(conf)
+	// conf, err = config.Read()
+	// if err != nil {
+	// 	fmt.Println(err)
+	// 	return
+	// }
+	// fmt.Println(conf)
 }
