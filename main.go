@@ -1,11 +1,14 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
 	"os"
 
 	"github.com/Zoisit/blog-aggregator/internal/cli"
 	"github.com/Zoisit/blog-aggregator/internal/config"
+	"github.com/Zoisit/blog-aggregator/internal/database"
+	_ "github.com/lib/pq"
 )
 
 func main() {
@@ -14,16 +17,24 @@ func main() {
 		fmt.Println(err)
 		return
 	}
-	//fmt.Println(conf)
+
+	db, err := sql.Open("postgres", conf.DB_URL)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	dbQueries := database.New(db)
 
 	s := cli.State{}
 	s.Config = &conf
+	s.DB = dbQueries
 
 	cmds := cli.Commands{
 		HandlerFunction: make(map[string]func(*cli.State, cli.Command) error),
 	}
 
 	cmds.Register("login", cli.HandlerLogin)
+	cmds.Register("register", cli.HandlerRegister)
 
 	args := os.Args
 
